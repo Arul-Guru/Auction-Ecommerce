@@ -1,4 +1,4 @@
-package com.auction.E_Commerce_Auction;
+package com.auction.ecommerce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

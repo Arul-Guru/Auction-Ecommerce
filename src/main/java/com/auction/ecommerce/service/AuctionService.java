@@ -23,8 +23,11 @@ public class AuctionService {
     }
 
     public Auction createAuction(Auction auction) {
-        logger.info("Creating auction: {}", auction);
+        if (auction.getAuctioneerId() <= 0) {
+            throw new IllegalArgumentException("Auctioneer ID must be a positive number");
+        }
         auction.setHighestBid(0); // Assuming highest bid starts at 0
+        logger.info("Creating auction: {}", auction);
         Auction savedAuction = auctionRepository.save(auction);
         logger.info("Saved auction: {}", savedAuction);
         return savedAuction;

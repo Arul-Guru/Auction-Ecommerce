@@ -15,6 +15,7 @@ import java.util.Optional;
 public class AuctionController {
 
     private final AuctionService auctionService;
+    //private final CategoryService categoryService;
 
     @Autowired
     public AuctionController(AuctionService auctionService) {
@@ -22,7 +23,10 @@ public class AuctionController {
     }
 
     @PostMapping
-    public ResponseEntity<Auction> createAuction(@RequestBody Auction auction) {
+    public ResponseEntity<?> createAuction(@RequestBody Auction auction) {
+        if (auction.getAuctioneerId() <= 0) {
+            return new ResponseEntity<>("Auctioneer ID must be a positive number", HttpStatus.BAD_REQUEST);
+        }
         Auction createdAuction = auctionService.createAuction(auction);
         return new ResponseEntity<>(createdAuction, HttpStatus.CREATED);
     }

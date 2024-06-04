@@ -1,32 +1,81 @@
 package com.auction.ecommerce.model;
-import jakarta.persistence.*;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
+import java.time.LocalDate;
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotBlank(message = "Username is mandatory")
-    @Size(min = 4, max = 20, message = "Username must be between 4 and 20 characters")
+    
     @Column(unique = true)
     private String username;
 
-    @NotBlank(message = "Password is mandatory")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @NotBlank
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email should be valid")
+     
     @Column(unique = true)
+    @Email(message = "Invalid email format")
+    @Pattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}", message = "Invalid email format")
     private String email;
+    
+    @Column(unique = true)
+    @NotBlank
+    @Pattern(regexp="^(\\\\+\\\\d{1,3}( )?)?((\\\\(\\\\d{1,3}\\\\))|\\\\d{1,3})[- .]?\\\\d{3,4}[- .]?\\\\d{4}$")
+    private String phone;
+    @NotBlank
+    @NotNull
+    private LocalDate dob;
+    @NotBlank
+    private String gender;
+    @NotBlank
+    private String address;
 
-    // Getters and Setters
+    public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	// Getters and Setters
     public int getId() {
         return id;
     }
@@ -39,7 +88,8 @@ public class User {
         return username;
     }
 
-    public void setUsername(String username) {
+    
+	public void setUsername(String username) {
         this.username = username;
     }
 
@@ -58,4 +108,28 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    public LocalDate getDob() {
+		return dob;
+	}
+
+	public void setDob(LocalDate dob) {
+		this.dob = dob;
+	}
+    
+
+	
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email + ", phone="
+				+ phone + ", dob=" + dob + ", gender=" + gender + ", address=" + address + "]";
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 }

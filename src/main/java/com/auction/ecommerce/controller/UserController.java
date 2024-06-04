@@ -1,54 +1,41 @@
 package com.auction.ecommerce.controller;
 
-
 import com.auction.ecommerce.model.User;
 import com.auction.ecommerce.service.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-//import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.AuthenticationException;
-
-
-//import javax.naming.AuthenticationException;
-//import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
-    	try {
-    	userService.registerUser(user);
-        return "User registered successfully";
-    	}
-    	catch(DataIntegrityViolationException e) {
-    		return "Username or email already exists";
-    	}
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            User registeredUser = userService.registerUser(user);
+            return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        } 
+        catch (IllegalArgumentException  e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody User user) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            return "User logged in successfully";
-        } catch (AuthenticationException e) {
-            return "Invalid username or password";
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
+        boolean isAuthenticated = userService.authenticateUser(user);
+        if (isAuthenticated) {
+            return new ResponseEntity<>("Login successful", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
         }
     }
 }

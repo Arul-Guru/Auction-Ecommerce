@@ -1,12 +1,9 @@
 package com.auction.ecommerce.service;
 
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import com.auction.ecommerce.model.User;
-
 import java.util.Collection;
 import java.util.Collections;
 
@@ -56,7 +53,3 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 }
-
-
-
-

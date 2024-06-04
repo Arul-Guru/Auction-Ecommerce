@@ -3,37 +3,60 @@ package com.auction.ecommerce.service;
 import com.auction.ecommerce.model.User;
 import com.auction.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-
+import java.util.regex.Pattern;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
+
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
     @Autowired
-    private UserRepository userRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
+    }
 
-    
-    private PasswordEncoder passwordEncoder;
-
-    public User registerUser(User user) {
+    public User registerUser(User user){
+        validateEmail(user.getEmail());
+        validatePhoneNumber(user.getPhone());
+        validateGender(user.getGender());
+        validatePassword(user.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
-    }
-    public User findByEmail(String email) {
-    	return userRepository.findByEmail(email).orElse(null);
+    public boolean authenticateUser(User user) {
+        User foundUser = userRepository.findByUsername(user.getUsername());
+        if (foundUser != null && passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
+            return true;
+        }
+        return false;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        return new CustomUserDetails(user);
+    private void validatePassword(String password) {
+        if (password == null || !Pattern.matches("^(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", password)) {
+            throw new IllegalArgumentException("Password must be at least 8 characters long, contain one uppercase letter, and one special symbol");
+        }
     }
+    
+    private void validateEmail(String email) {
+        if (email == null || !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", email)) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+    }
+
+    private void validatePhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || !Pattern.matches("^\\+?[0-9. ()-]{7,25}$", phoneNumber)) {
+            throw new IllegalArgumentException("Invalid phone number format");
+        }
+    }
+    private void validateGender(String gender) {
+        if (!gender.equalsIgnoreCase("male") && !gender.equalsIgnoreCase("female") && !gender.equalsIgnoreCase("others")) {
+            throw new IllegalArgumentException("Invalid gender");
+        }
+    }
+
 }

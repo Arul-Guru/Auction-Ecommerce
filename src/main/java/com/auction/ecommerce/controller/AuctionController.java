@@ -18,9 +18,11 @@ public class AuctionController {
     @Autowired
     private AuctionService auctionService;
 
-    //status needs to be active not open
     @PostMapping
-    public ResponseEntity<Auction> createAuction(@RequestBody Auction auction, @RequestParam Long categoryId) {
+    public ResponseEntity<?> createAuction(@RequestBody Auction auction, @RequestParam Long categoryId) {
+        if (auction.getAuctioneerId() == null || auction.getAuctioneerId() <= 0) {
+            return new ResponseEntity<>("Auctioneer ID must be a positive number", HttpStatus.BAD_REQUEST);
+        }
         Auction savedAuction = auctionService.createAuction(auction, categoryId);
         return new ResponseEntity<>(savedAuction, HttpStatus.CREATED);
     }

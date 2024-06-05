@@ -2,13 +2,10 @@ package com.auction.ecommerce.model;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "auction")  // Ensure the table name is specified correctly
 public class Auction {
 
     @Id
@@ -35,6 +32,10 @@ public class Auction {
 
     @Column(name = "status")
     private String status;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     // Getters and setters
 
@@ -102,6 +103,14 @@ public class Auction {
         this.status = status;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "Auction{" +
@@ -113,6 +122,7 @@ public class Auction {
                 ", endTime=" + endTime +
                 ", auctioneerId=" + auctioneerId +
                 ", status='" + status + '\'' +
+                ", category=" + category +
                 '}';
     }
 }

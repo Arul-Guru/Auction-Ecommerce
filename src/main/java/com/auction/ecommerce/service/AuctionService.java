@@ -1,8 +1,13 @@
 package com.auction.ecommerce.service;
 
+import com.auction.ecommerce.exception.ResourceNotFoundException;
 import com.auction.ecommerce.model.Auction;
+import com.auction.ecommerce.model.Category;
 import com.auction.ecommerce.repository.AuctionRepository;
+import com.auction.ecommerce.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +21,27 @@ public class AuctionService {
     private static final Logger logger = LoggerFactory.getLogger(AuctionService.class);
 
     private final AuctionRepository auctionRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public AuctionService(AuctionRepository auctionRepository) {
+    public AuctionService(AuctionRepository auctionRepository, CategoryRepository categoryRepository) {
         this.auctionRepository = auctionRepository;
+        this.categoryRepository = categoryRepository;
     }
 
-    public Auction createAuction(Auction auction) {
-        if (auction.getAuctioneerId() <= 0) {
-            throw new IllegalArgumentException("Auctioneer ID must be a positive number");
-        }
-        auction.setHighestBid(0); // Assuming highest bid starts at 0
+    public Auction createAuction(Auction auction, Long categoryId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = authentication.getName();
+        auction.setAuctioneerId(currentUsername); // Automatically set the auctioneerId to the current authenticated username
+
         logger.info("Creating auction: {}", auction);
+        auction.setHighestBid(0); // Assuming highest bid starts at 0
+        
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+        
+        auction.getCategories().add(category);
+
         Auction savedAuction = auctionRepository.save(auction);
         logger.info("Saved auction: {}", savedAuction);
         return savedAuction;
@@ -41,7 +55,7 @@ public class AuctionService {
         return auctionRepository.findById(id);
     }
 
-    public Auction updateAuction(Long id, Auction auctionDetails) {
+    public Auction updateAuction(Long id, Auction auctionDetails, Long categoryId) {
         return auctionRepository.findById(id).map(auction -> {
             auction.setItemName(auctionDetails.getItemName());
             auction.setItemDescription(auctionDetails.getItemDescription());
@@ -49,9 +63,18 @@ public class AuctionService {
             auction.setEndTime(auctionDetails.getEndTime());
             auction.setAuctioneerId(auctionDetails.getAuctioneerId());
             auction.setStatus(auctionDetails.getStatus());
+            
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            auction.getCategories().clear();
+            auction.getCategories().add(category);
+            
             return auctionRepository.save(auction);
         }).orElseGet(() -> {
             auctionDetails.setId(id);
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+            auctionDetails.getCategories().add(category);
             return auctionRepository.save(auctionDetails);
         });
     }

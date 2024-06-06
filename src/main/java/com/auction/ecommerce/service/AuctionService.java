@@ -27,16 +27,18 @@ public class AuctionService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Auction createAuction(Auction auction, Long categoryId) {
-        logger.info("Creating auction: {}", auction);
-        auction.setHighestBid(0); // Assuming highest bid starts at 0
-        
+    public Auction createAuction(Auction auction) {
+        validateAuction(auction);
+
+        Long categoryId = auction.getCategoryId();
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-        
+                .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
+
         auction.setCategory(category);
+        auction.setHighestBid(0);
         Auction savedAuction = auctionRepository.save(auction);
         logger.info("Saved auction: {}", savedAuction);
+
         return savedAuction;
     }
 
@@ -48,7 +50,9 @@ public class AuctionService {
         return auctionRepository.findById(id);
     }
 
-    public Auction updateAuction(Long id, Auction auctionDetails, Long categoryId) {
+    public Auction updateAuction(Long id, Auction auctionDetails) {
+        validateAuction(auctionDetails);
+
         return auctionRepository.findById(id).map(auction -> {
             auction.setItemName(auctionDetails.getItemName());
             auction.setItemDescription(auctionDetails.getItemDescription());
@@ -56,16 +60,18 @@ public class AuctionService {
             auction.setEndTime(auctionDetails.getEndTime());
             auction.setAuctioneerId(auctionDetails.getAuctioneerId());
             auction.setStatus(auctionDetails.getStatus());
-            
+
+            Long categoryId = auctionDetails.getCategoryId();
             Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
             auction.setCategory(category);
-            
+
             return auctionRepository.save(auction);
         }).orElseGet(() -> {
             auctionDetails.setId(id);
+            Long categoryId = auctionDetails.getCategoryId();
             Category category = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+                    .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
             auctionDetails.setCategory(category);
             return auctionRepository.save(auctionDetails);
         });
@@ -73,5 +79,20 @@ public class AuctionService {
 
     public void deleteAuction(Long id) {
         auctionRepository.deleteById(id);
+    }
+
+    private void validateAuction(Auction auction) {
+        if (auction.getStartingPrice() < 0) {
+            throw new IllegalArgumentException("Starting price cannot be negative");
+        }
+        if (auction.getHighestBid() < 0) {
+            throw new IllegalArgumentException("Highest bid cannot be negative");
+        }
+        if (!"active".equalsIgnoreCase(auction.getStatus()) && !"closed".equalsIgnoreCase(auction.getStatus())) {
+            throw new IllegalArgumentException("Status must be either 'active' or 'closed'");
+        }
+        if (auction.getCategoryId() == null || auction.getCategoryId() <= 0) {
+            throw new IllegalArgumentException("Category ID must be a positive number");
+        }
     }
 }

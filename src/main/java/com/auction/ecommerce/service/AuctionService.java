@@ -6,8 +6,6 @@ import com.auction.ecommerce.model.Category;
 import com.auction.ecommerce.repository.AuctionRepository;
 import com.auction.ecommerce.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +28,13 @@ public class AuctionService {
     }
 
     public Auction createAuction(Auction auction, Long categoryId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
-        auction.setAuctioneerId(currentUsername); // Automatically set the auctioneerId to the current authenticated username
-
         logger.info("Creating auction: {}", auction);
         auction.setHighestBid(0); // Assuming highest bid starts at 0
         
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
         
-        auction.getCategories().add(category);
-
+        auction.setCategory(category);
         Auction savedAuction = auctionRepository.save(auction);
         logger.info("Saved auction: {}", savedAuction);
         return savedAuction;
@@ -66,15 +59,14 @@ public class AuctionService {
             
             Category category = categoryRepository.findById(categoryId)
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-            auction.getCategories().clear();
-            auction.getCategories().add(category);
+            auction.setCategory(category);
             
             return auctionRepository.save(auction);
         }).orElseGet(() -> {
             auctionDetails.setId(id);
             Category category = categoryRepository.findById(categoryId)
                     .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-            auctionDetails.getCategories().add(category);
+            auctionDetails.setCategory(category);
             return auctionRepository.save(auctionDetails);
         });
     }

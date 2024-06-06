@@ -1,39 +1,41 @@
 package com.auction.ecommerce.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-
 @Entity
-@Table(name = "auction")  // Ensure the table name is specified correctly
+@Table(name = "auctions")
 public class Auction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "item_name")
+    @Column(name = "item_name", nullable = false)
     private String itemName;
 
     @Column(name = "description")
     private String itemDescription;
 
-    @Column(name = "starting_bid")
+    @Column(name = "starting_bid", nullable = false)
     private double startingPrice;
 
     @Column(name = "highest_bid")
     private double highestBid;
 
-    @Column(name = "end_time")
+    @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(name = "auctioneer_id")
-    private int auctioneerId;
+    @Column(name = "auctioneer_id", nullable = false)
+    private Integer auctioneerId;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private String status;
 
-    @ManyToOne
+    @Transient
+    private String categoryName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -87,11 +89,11 @@ public class Auction {
         this.endTime = endTime;
     }
 
-    public int getAuctioneerId() {
+    public Integer getAuctioneerId() {
         return auctioneerId;
     }
 
-    public void setAuctioneerId(int auctioneerId) {
+    public void setAuctioneerId(Integer auctioneerId) {
         this.auctioneerId = auctioneerId;
     }
 
@@ -103,26 +105,19 @@ public class Auction {
         this.status = status;
     }
 
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     public Category getCategory() {
         return category;
     }
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    @Override
-    public String toString() {
-        return "Auction{" +
-                "id=" + id +
-                ", itemName='" + itemName + '\'' +
-                ", itemDescription='" + itemDescription + '\'' +
-                ", startingPrice=" + startingPrice +
-                ", highestBid=" + highestBid +
-                ", endTime=" + endTime +
-                ", auctioneerId=" + auctioneerId +
-                ", status='" + status + '\'' +
-                ", category=" + category +
-                '}';
     }
 }

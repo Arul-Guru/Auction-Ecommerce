@@ -9,7 +9,7 @@ public class Auction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "item_name")
     private String itemName;
@@ -35,17 +35,15 @@ public class Auction {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
 
-    // Getters and setters
-
-    public Long getId() {
+    public  int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -132,7 +130,7 @@ public class Auction {
                 ", endTime=" + endTime +
                 ", auctioneerId=" + auctioneerId +
                 ", status='" + status + '\'' +
-                ", category=" + category +
+                ", categoryid=" + categoryId +
                 '}';
     }
 }

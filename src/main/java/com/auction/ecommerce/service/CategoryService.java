@@ -1,12 +1,11 @@
 package com.auction.ecommerce.service;
 
-import com.auction.ecommerce.exception.ResourceNotFoundException;
-import com.auction.ecommerce.model.Category;
-import com.auction.ecommerce.repository.CategoryRepository;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import com.auction.ecommerce.model.Category;
+import com.auction.ecommerce.repository.CategoryRepository;
 
 @Service
 public class CategoryService {
@@ -22,7 +21,7 @@ public class CategoryService {
         return categoryRepository.findAll();
     }
 
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    public Optional<Category> getCategoryById(Long id) {
+        return categoryRepository.findById(id);
     }
 }

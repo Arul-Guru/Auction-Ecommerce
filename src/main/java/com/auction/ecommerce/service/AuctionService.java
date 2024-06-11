@@ -1,6 +1,5 @@
 package com.auction.ecommerce.service;
 
-import com.auction.ecommerce.exception.ResourceNotFoundException;
 import com.auction.ecommerce.model.Auction;
 import com.auction.ecommerce.model.Category;
 import com.auction.ecommerce.repository.AuctionRepository;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -46,11 +44,11 @@ public class AuctionService {
         return auctionRepository.findAll();
     }
 
-    public Optional<Auction> getAuctionById(Long id) {
+    public Optional<Auction> getAuctionById(int id) {
         return auctionRepository.findById(id);
     }
 
-    public Auction updateAuction(Long id, Auction auctionDetails) {
+    public Auction updateAuction(int id, Auction auctionDetails) {
         validateAuction(auctionDetails);
 
         return auctionRepository.findById(id).map(auction -> {
@@ -77,7 +75,7 @@ public class AuctionService {
         });
     }
 
-    public void deleteAuction(Long id) {
+    public void deleteAuction(int id) {
         auctionRepository.deleteById(id);
     }
 
@@ -92,6 +90,7 @@ public class AuctionService {
             throw new IllegalArgumentException("Status must be either 'active' or 'closed'");
         }
         if (auction.getCategoryId() == null || auction.getCategoryId() <= 0) {
+        	logger.info("categoryid : {}",auction.getCategoryId());
             throw new IllegalArgumentException("Category ID must be a positive number");
         }
     }

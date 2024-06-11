@@ -1,19 +1,8 @@
 package com.auction.ecommerce.model;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Pattern;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.LocalDate;
-
 
 @Entity
 @Table(name = "users")
@@ -48,6 +37,10 @@ public class User {
     private String gender;
     @NotBlank
     private String address;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     public String getPhone() {
 		return phone;
@@ -114,16 +107,17 @@ public class User {
 	public void setDob(LocalDate dob) {
 		this.dob = dob;
 	}
-    
+	public Role getRole() {
+        return role;
+    }
 
-	
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email + ", phone="
-				+ phone + ", dob=" + dob + ", gender=" + gender + ", address=" + address + "]";
+				+ phone + ", dob=" + dob + ", gender=" + gender + ", address=" + address + ", role=" + role + "]";
 	}
-
-	
-
-	
 }

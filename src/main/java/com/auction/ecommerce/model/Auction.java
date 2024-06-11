@@ -1,7 +1,7 @@
 package com.auction.ecommerce.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "auctions")
@@ -11,37 +11,35 @@ public class Auction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "item_name", nullable = false)
+    @Column(name = "item_name")
     private String itemName;
 
     @Column(name = "description")
     private String itemDescription;
 
-    @Column(name = "starting_bid", nullable = false)
+    @Column(name = "starting_bid")
     private double startingPrice;
 
     @Column(name = "highest_bid")
     private double highestBid;
 
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "auctioneer_id", nullable = false)
-    private Integer auctioneerId;
+    @Column(name = "auctioneer_id")
+    private int auctioneerId;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private String status;
 
-    @Transient
-    private String categoryName;
+    @Column(name = "category_id")
+    private Long categoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
 
-    // Getters and setters
-
-    public int getId() {
+    public  int getId() {
         return id;
     }
 
@@ -89,11 +87,11 @@ public class Auction {
         this.endTime = endTime;
     }
 
-    public Integer getAuctioneerId() {
+    public int getAuctioneerId() {
         return auctioneerId;
     }
 
-    public void setAuctioneerId(Integer auctioneerId) {
+    public void setAuctioneerId(int auctioneerId) {
         this.auctioneerId = auctioneerId;
     }
 
@@ -105,19 +103,34 @@ public class Auction {
         this.status = status;
     }
 
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
     public Category getCategory() {
         return category;
     }
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+    
+    @Override
+    public String toString() {
+        return "Auction{" +
+                "id=" + id +
+                ", itemName='" + itemName + '\'' +
+                ", itemDescription='" + itemDescription + '\'' +
+                ", startingPrice=" + startingPrice +
+                ", highestBid=" + highestBid +
+                ", endTime=" + endTime +
+                ", auctioneerId=" + auctioneerId +
+                ", status='" + status + '\'' +
+                ", categoryid=" + categoryId +
+                '}';
     }
 }

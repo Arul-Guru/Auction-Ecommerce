@@ -1,10 +1,9 @@
 package com.auction.ecommerce.model;
 
-import jakarta.persistence.*;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -19,12 +18,9 @@ public class Category {
     private String name;
 
     private String description;
-    
     @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Auction> auctions;
-
-    // Getters and setters
 
     public Long getId() {
         return id;
@@ -58,12 +54,11 @@ public class Category {
         this.auctions = auctions;
     }
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", name=" + name + ", description=" + description + ", auctions=" + auctions
+				+ "]";
+	}
+
+    
 }

@@ -47,6 +47,12 @@ private static final Logger logger = LoggerFactory.getLogger(AuctionController.c
             return new ResponseEntity<>("Auction not found", HttpStatus.NOT_FOUND);
         }
     }
+    
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<Auction>> getAuctionsByCategoryId(@RequestHeader("Authorization") String token, @PathVariable Long categoryId) {
+        List<Auction> auctions = auctionService.findAuctionsByCategoryId(categoryId);
+        return new ResponseEntity<>(auctions, HttpStatus.OK);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateAuction(@RequestHeader("Authorization") String token,@PathVariable int id, @RequestBody Auction auctionDetails) {

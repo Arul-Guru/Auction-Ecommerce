@@ -94,4 +94,8 @@ public class AuctionService {
             throw new IllegalArgumentException("Category ID must be a positive number");
         }
     }
+    
+    public List<Auction> findAuctionsByCategoryId(Long categoryId) {
+        return auctionRepository.findByCategoryId(categoryId);
+    }
 }

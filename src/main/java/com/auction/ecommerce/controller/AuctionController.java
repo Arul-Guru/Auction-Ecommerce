@@ -34,20 +34,20 @@ public class AuctionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Auction> getAuctionById(@PathVariable Long id) {
+    public ResponseEntity<Auction> getAuctionById(@PathVariable int id) {
         Optional<Auction> auction = auctionService.getAuctionById(id);
         return auction.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Auction> updateAuction(@PathVariable Long id, @RequestBody Auction auctionDetails, @RequestParam Long categoryId) {
+    public ResponseEntity<Auction> updateAuction(@PathVariable int id, @RequestBody Auction auctionDetails, @RequestParam Long categoryId) {
         Auction updatedAuction = auctionService.updateAuction(id, auctionDetails, categoryId);
         return new ResponseEntity<>(updatedAuction, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAuction(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAuction(@PathVariable int id) {
         auctionService.deleteAuction(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

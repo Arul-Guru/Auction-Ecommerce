@@ -44,11 +44,11 @@ public class AuctionService {
         return auctionRepository.findAll();
     }
 
-    public Optional<Auction> getAuctionById(Long id) {
+    public Optional<Auction> getAuctionById(int id) {
         return auctionRepository.findById(id);
     }
 
-    public Auction updateAuction(Long id, Auction auctionDetails, Long categoryId) {
+    public Auction updateAuction(int id, Auction auctionDetails, Long categoryId) {
         return auctionRepository.findById(id).map(auction -> {
             auction.setItemName(auctionDetails.getItemName());
             auction.setItemDescription(auctionDetails.getItemDescription());
@@ -71,7 +71,7 @@ public class AuctionService {
         });
     }
 
-    public void deleteAuction(Long id) {
+    public void deleteAuction(int id) {
         auctionRepository.deleteById(id);
     }
 }

@@ -1,21 +1,29 @@
 package com.auction.ecommerce.service;
 
+import com.auction.ecommerce.model.Role;
 import com.auction.ecommerce.model.User;
+import com.auction.ecommerce.repository.RoleRepository;
 import com.auction.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.regex.Pattern;
 
+
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+
+    
+
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
@@ -25,7 +33,26 @@ public class UserService {
         validateGender(user.getGender());
         validatePassword(user.getPassword());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Role userRole = roleRepository.findByName("ROLE_USER");
+        if (userRole == null) {
+            userRole = new Role();
+            userRole.setName("ROLE_USER");
+            roleRepository.save(userRole);
+        }
+        user.setRole(userRole);
+        
+    
         return userRepository.save(user);
+    }
+    public void assignAdminRole(User user) {
+        Role adminRole = roleRepository.findByName("ROLE_ADMIN");
+        if (adminRole == null) {
+            adminRole = new Role();
+            adminRole.setName("ROLE_ADMIN");
+            roleRepository.save(adminRole);
+        }
+        user.setRole(adminRole);
+        userRepository.save(user);
     }
 
     public boolean authenticateUser(User user) {

@@ -33,13 +33,13 @@ public class BidService {
     }
 
     @Transactional
-    public Bid placeBid(int auctionId, int userId, BigDecimal bidAmount) {
+    public Bid placeBid(int auctionId, int userId, double bidAmount) {
         logger.info("Placing bid for auctionId: {}, userId: {}, bidAmount: {}", auctionId, userId, bidAmount);
 
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> {
                     logger.error("Auction not found for id: {}", auctionId);
-                    return new ResourceNotFoundException("Auction not found");
+                    return new IllegalArgumentException("Auction not found");
                 });
 
         if (auction.getEndTime().isBefore(LocalDateTime.now())) {
@@ -50,7 +50,7 @@ public class BidService {
         Bid highestBid = bidRepository.findBidsByAuctionIdOrderByBidAmountDesc(auctionId)
                 .stream().findFirst().orElse(null);
 
-        if (highestBid != null && bidAmount.compareTo(highestBid.getBidAmount()) <= 0) {
+        if (highestBid != null && bidAmount <= highestBid.getBidAmount()) {
             logger.warn("Bid amount {} is not higher than the current highest bid {} for auctionId: {}", 
                         bidAmount, highestBid.getBidAmount(), auctionId);
             throw new IllegalArgumentException("Bid must be higher than the current highest bid");
@@ -59,7 +59,7 @@ public class BidService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     logger.error("User not found for id: {}", userId);
-                    return new ResourceNotFoundException("User not found");
+                    throw new IllegalArgumentException("User not found");
                 });
 
         Bid newBid = new Bid();
@@ -71,6 +71,9 @@ public class BidService {
         Bid savedBid = bidRepository.save(newBid);
         logger.info("Bid successfully placed for auctionId: {}, userId: {}, bidAmount: {}", 
                     auctionId, userId, bidAmount);
+        
+        auction.setHighestBid(bidAmount);
+        auctionRepository.save(auction);
 
         return savedBid;
     }

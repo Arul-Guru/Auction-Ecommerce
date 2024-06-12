@@ -24,7 +24,7 @@ public class Bid {
     private int id;
 
     @Column(name = "bid_amount", nullable = false)
-    private BigDecimal bidAmount;
+    private double bidAmount;
 
     @Column(name = "bid_time", nullable = false)
     private LocalDateTime bidTime;
@@ -46,11 +46,11 @@ public class Bid {
         this.id = id;
     }
 
-    public BigDecimal getBidAmount() {
+    public double getBidAmount() {
         return bidAmount;
     }
 
-    public void setBidAmount(BigDecimal bidAmount) {
+    public void setBidAmount(double bidAmount) {
         this.bidAmount = bidAmount;
     }
 

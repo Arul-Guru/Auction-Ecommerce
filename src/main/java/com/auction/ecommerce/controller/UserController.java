@@ -6,6 +6,9 @@ import com.auction.ecommerce.model.AuthResponse;
 import com.auction.ecommerce.model.User;
 import com.auction.ecommerce.service.CustomUserDetailsService;
 import com.auction.ecommerce.service.UserService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +21,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1")
 public class UserController {
-
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     @Autowired
@@ -39,6 +42,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
+        	logger.info("Registered user info = {}",user.toString());
             User registeredUser = userService.registerUser(user);
             return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
         } 
@@ -48,6 +52,7 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthRequest authRequest) {
+    	logger.info("AuthanticationRequest = {}",authRequest.getUsername());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
         );
@@ -62,6 +67,7 @@ public class UserController {
 
     @GetMapping("/user")
     public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal UserDetails userDetails) {
+    	logger.info("Registered UserDetails = {}",userDetails.toString());
         return ResponseEntity.ok(userDetails);
     }   
 }

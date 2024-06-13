@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth/bids")
+@RequestMapping("/api/v1/bids")
 public class BidController {
 
     private static final Logger logger = LoggerFactory.getLogger(BidController.class);
@@ -24,12 +24,16 @@ public class BidController {
 
     @PostMapping
     public ResponseEntity<Object> placeBid(
-            @RequestHeader("Authorization") String token, @RequestBody Bid bids) {
-    	
+            @RequestHeader("Authorization") String token, // Assuming token is for demonstration
+            @RequestBody Bid bid) {
         try {
-            logger.info("Placing bid for auctionId: {}, userId: {}, bidAmount: {}", bids.getAuction().getId(), bids.getBidderId(), bids.getBidAmount());
-            Bid bid = bidService.placeBid(bids.getAuction().getId(), bids.getBidderId(), bids.getBidAmount());
-            return new ResponseEntity<>(bid, HttpStatus.CREATED);
+            logger.info("Received bid request for auctionId: {}, bidAmount: {}", 
+                        bid.getAuction().getId(), bid.getBidAmount());
+            
+            // Place the bid using the provided bid object
+            Bid placedBid = bidService.placeBid(bid);
+            
+            return new ResponseEntity<>(placedBid, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             logger.error("Error placing bid: {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

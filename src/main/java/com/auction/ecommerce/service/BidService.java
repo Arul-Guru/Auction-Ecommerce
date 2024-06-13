@@ -44,7 +44,7 @@ public class BidService {
 
         if (auction.getEndTime().isBefore(LocalDateTime.now())) {
             logger.warn("Attempted to place a bid on a closed auction. AuctionId: {}", auctionId);
-            throw new IllegalStateException("Auction is closed");
+            throw new IllegalArgumentException("Auction is closed");
         }
 
         Bid highestBid = bidRepository.findBidsByAuctionIdOrderByBidAmountDesc(auctionId)

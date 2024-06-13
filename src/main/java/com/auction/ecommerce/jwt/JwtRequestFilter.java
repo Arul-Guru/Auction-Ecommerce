@@ -11,6 +11,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+
 import java.io.IOException;
 
 @Component
@@ -28,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-
+		try {
         final String authorizationHeader = request.getHeader("Authorization");
 
         String username = null;
@@ -49,6 +53,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
+		}
+		catch (MalformedJwtException ex) {
+            handleException(response, "Invalid JWT token");
+            return;
+        } catch (JwtException ex) {
+            handleException(response, "JWT token is expired or invalid");
+            return;
+        }
         chain.doFilter(request, response);
+    }
+	private void handleException(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }

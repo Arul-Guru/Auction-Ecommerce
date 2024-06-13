@@ -2,7 +2,10 @@ package com.auction.ecommerce.jwt;
  
 import java.security.Key;
 import java.util.Date;
+//import java.util.HashMap;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,10 +18,12 @@ import io.jsonwebtoken.security.Keys;
 public class JwtUtil {
 
     private String secret = "137DCF773F2C6AF75FBD7C2C9A627shdgksljflhskgflafihisfggshfksfklfkhs"; // Use a secure key and store it safely
-
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
+    
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
+                //.setClaims()
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
@@ -50,6 +55,7 @@ public class JwtUtil {
     }
     public boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
+        logger.info(extractedUsername);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 

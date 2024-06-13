@@ -1,6 +1,9 @@
 package com.auction.ecommerce.model;
 
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -26,9 +29,6 @@ public class Auction {
     @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "auctioneer_id")
-    private int auctioneerId;
-
     @Column(name = "status")
     private String status;
 
@@ -38,8 +38,19 @@ public class Auction {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)	
+    private User creator;
 
-    public  int getId() {
+    public User getCreator() {
+		return creator;
+	}
+
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+
+	public  int getId() {
         return id;
     }
 
@@ -87,14 +98,6 @@ public class Auction {
         this.endTime = endTime;
     }
 
-    public int getAuctioneerId() {
-        return auctioneerId;
-    }
-
-    public void setAuctioneerId(int auctioneerId) {
-        this.auctioneerId = auctioneerId;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -120,17 +123,9 @@ public class Auction {
     }
     
     @Override
-    public String toString() {
-        return "Auction{" +
-                "id=" + id +
-                ", itemName='" + itemName + '\'' +
-                ", itemDescription='" + itemDescription + '\'' +
-                ", startingPrice=" + startingPrice +
-                ", highestBid=" + highestBid +
-                ", endTime=" + endTime +
-                ", auctioneerId=" + auctioneerId +
-                ", status='" + status + '\'' +
-                ", categoryid=" + categoryId +
-                '}';
-    }
+	public String toString() {
+		return "Auction [id=" + id + ", itemName=" + itemName + ", itemDescription=" + itemDescription
+				+ ", startingPrice=" + startingPrice + ", highestBid=" + highestBid + ", endTime=" + endTime
+				+ ", status=" + status + ", categoryId=" + categoryId + "]";
+	}
 }

@@ -1,10 +1,10 @@
-package com.example.auction_ecommerce;
+package com.auction.ecommerce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AuctionEcommerceApplicationTests {
+class ECommerceAuctionApplicationTests {
 
 	@Test
 	void contextLoads() {

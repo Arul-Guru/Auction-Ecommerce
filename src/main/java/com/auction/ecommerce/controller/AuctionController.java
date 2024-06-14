@@ -41,13 +41,17 @@ private static final Logger logger = LoggerFactory.getLogger(AuctionController.c
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getAuctionById(@RequestHeader("Authorization") String token,@PathVariable int id) {
-        Optional<Auction> auction = auctionService.getAuctionById(id);
+    	try {
+    	Optional<Auction> auction = auctionService.getAuctionById(id);
         logger.info("getAuctionById = {}",auction.toString());
-        if (auction.isPresent()) {
-            return new ResponseEntity<>(auction.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Auction not found", HttpStatus.NOT_FOUND);
-        }
+        	if (auction.isPresent()) {
+                return new ResponseEntity<>(auction.get(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Auction not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (TemplateInputException e) {
+    		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    	}
     }
     
     @GetMapping("/category/{categoryId}")

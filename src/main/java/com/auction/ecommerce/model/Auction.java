@@ -2,11 +2,14 @@ package com.auction.ecommerce.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 import jakarta.persistence.*;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "auctions")
 public class Auction {
 
@@ -39,7 +42,7 @@ public class Auction {
     @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Category category;
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)	
+    @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
 
     public User getCreator() {

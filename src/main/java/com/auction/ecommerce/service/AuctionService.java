@@ -70,7 +70,6 @@ public class AuctionService {
             auction.setItemDescription(auctionDetails.getItemDescription());
             auction.setStartingPrice(auctionDetails.getStartingPrice());
             auction.setEndTime(auctionDetails.getEndTime());
-            //auction.setCreator(auctionDetails.getCreator());
             auction.setStatus(auctionDetails.getStatus());
 
             Long categoryId = auctionDetails.getCategoryId();

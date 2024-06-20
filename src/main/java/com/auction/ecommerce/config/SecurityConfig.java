@@ -33,11 +33,22 @@ public class SecurityConfig {
         http.csrf().disable()
             .authorizeRequests()
                 .requestMatchers("/api/v1/**").permitAll()
+                .requestMatchers("/api/v2/register", "/api/v2/login","/api/v2/**").permitAll()
                 .requestMatchers("/api/v1/auctions").authenticated()
                 .requestMatchers("/api/v1/categories").authenticated()
                 .requestMatchers("/api/v1/bids").authenticated()
-                .anyRequest().authenticated()
             .and()
+            .formLogin(formLogin ->
+            formLogin
+                .loginPage("/api/v2/users/login")
+                .defaultSuccessUrl("/api/v2/users/home", true)
+                .permitAll()
+        )
+        .logout(logout ->
+            logout
+                .logoutSuccessUrl("/api/v2/users/logout")
+                .permitAll()
+        )
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

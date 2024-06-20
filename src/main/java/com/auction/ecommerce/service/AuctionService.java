@@ -1,3 +1,4 @@
+/**
 package com.auction.ecommerce.service;
 
 import com.auction.ecommerce.model.Auction;
@@ -132,5 +133,114 @@ public class AuctionService {
     
     public List<Auction> findAuctionsByCategoryId(Long categoryId) {
         return auctionRepository.findByCategoryId(categoryId);
+    }
+}
+*/
+
+package com.auction.ecommerce.service;
+
+import com.auction.ecommerce.model.Auction;
+import com.auction.ecommerce.repository.AuctionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class AuctionService {
+
+    @Autowired
+    private AuctionRepository auctionRepository;
+
+    /**
+     * Creates a new auction.
+     * @param auction the auction to create.
+     * @return the created auction.
+     */
+    public Auction createAuction(Auction auction) {
+        // Additional business logic can be added here before saving
+        auction.setStatus("active"); // Set default status to active
+        return auctionRepository.save(auction);
+    }
+
+    public List<Auction> getAllAuctions() {
+        List<Auction> auctions = auctionRepository.findAll();
+        auctions.forEach(auction -> System.out.println("Fetched auction: " + auction)); // Log each auction fetched
+        return auctions;
+    }
+
+
+    /**
+     * Finds auctions by category ID.
+     * @param categoryId the category ID.
+     * @return a list of auctions in the given category.
+     */
+    public List<Auction> findAuctionsByCategoryId(Long categoryId) {
+        return auctionRepository.findByCategoryId(categoryId);
+    }
+
+    /**
+     * Retrieves an auction by its ID.
+     * @param id the auction ID.
+     * @return an optional auction.
+     */
+    public Optional<Auction> getAuctionById(int id) {
+        return auctionRepository.findById(id);
+    }
+
+    /**
+     * Updates an existing auction.
+     * @param id the auction ID.
+     * @param auctionDetails the new auction details.
+     * @return the updated auction.
+     */
+    public Auction updateAuction(int id, Auction auctionDetails) {
+        Auction auction = auctionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
+        
+        // Update fields
+        auction.setItemName(auctionDetails.getItemName());
+        auction.setItemDescription(auctionDetails.getItemDescription());
+        auction.setStartingPrice(auctionDetails.getStartingPrice());
+        auction.setEndTime(auctionDetails.getEndTime());
+        auction.setStatus(auctionDetails.getStatus());
+        
+        // Save the updated auction
+        return auctionRepository.save(auction);
+    }
+
+    /**
+     * Deletes an auction by its ID.
+     * @param id the auction ID.
+     */
+    public void deleteAuction(int id) {
+        Auction auction = auctionRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
+        
+        auctionRepository.delete(auction);
+    }
+
+    /**
+     * Places a bid on an auction.
+     * @param auctionId the auction ID.
+     * @param bidAmount the bid amount.
+     * @return the updated auction.
+     */
+    public Auction placeBid(int auctionId, double bidAmount) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
+
+        if (auction.getEndTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Auction has ended");
+        }
+
+        if (bidAmount <= auction.getHighestBid()) {
+            throw new IllegalArgumentException("Bid must be higher than the current highest bid");
+        }
+
+        auction.setHighestBid(bidAmount);
+        return auctionRepository.save(auction);
     }
 }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Auctions in Category</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Auctions in <span th:text="${category.name}">Category Name</span></h1>
+        <!-- Ensure th:href correctly includes the categoryId -->
+        <a th:href="@{/api/v2/auctions/create(categoryId=${category.id})}" class="btn btn-success mb-3">Create New Auction</a>
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Description</th>
+                    <th>Starting Bid</th>
+                    <th>Highest Bid</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="auction : ${auctions}">
+                    <td th:text="${auction.itemName}">Item Name</td>
+                    <td th:text="${auction.itemDescription}">Description</td>
+                    <td th:text="${auction.startingPrice}">Starting Bid</td>
+                    <td th:text="${auction.highestBid}">Highest Bid</td>
+                    <td th:text="${#temporals.format(auction.endTime, 'yyyy-MM-dd HH:mm:ss')}">End Time</td>
+                    <td th:text="${auction.status}">Status</td>
+                    <td>
+                        <a th:href="@{/api/v2/auctions/{id}(id=${auction.id})}" class="btn btn-info btn-sm">View</a>
+                        <a th:href="@{/api/v2/auctions/update/{id}(id=${auction.id})}" class="btn btn-warning btn-sm">Update</a>
+                        <a th:href="@{/api/v2/auctions/delete/{id}(id=${auction.id})}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(auctions)}">
+                    <td colspan="7">No auctions found in this category.</td>
+                </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/api/v2/users/home}" class="btn btn-secondary">Back to Categories</a>
+    </div>
+</body>
+</html>

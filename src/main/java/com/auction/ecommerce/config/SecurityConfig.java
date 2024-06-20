@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.auction.ecommerce.jwt.JwtRequestFilter;
@@ -27,25 +26,23 @@ public class SecurityConfig {
         this.jwtRequestFilter = jwtRequestFilter;
     }
 
-    @SuppressWarnings({ "removal", "deprecation" })
-	@Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeRequests()
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/api/v1/**").permitAll()
-                .requestMatchers("/api/v1/auctions").authenticated()
-                .requestMatchers("/api/v1/categories").authenticated()
-                .requestMatchers("/api/v1/bids").authenticated()
+                .requestMatchers("/api/v2/users/register", "/api/v2/users/login", "/api/v2/users/home").permitAll()
+                .requestMatchers("/api/v2/auctions/**", "/").permitAll() // Allow public access to auction and home endpoints
                 .anyRequest().authenticated()
-            .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            )
+            .sessionManagement(sessionManagement -> sessionManagement
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-    
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -54,11 +51,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    
-    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        return auth.build();
     }
 }

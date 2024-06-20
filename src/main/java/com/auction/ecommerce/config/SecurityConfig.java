@@ -32,7 +32,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                 .requestMatchers("/api/v1/**").permitAll()
                 .requestMatchers("/api/v2/users/register", "/api/v2/users/login", "/api/v2/users/home").permitAll()
-                .requestMatchers("/api/v2/auctions/**", "/").permitAll() // Allow public access to auction and home endpoints
+                .requestMatchers("/api/v2/auctions/**").permitAll() // Allow public access to auction and home endpoints
                 .anyRequest().authenticated()
             )
             .sessionManagement(sessionManagement -> sessionManagement

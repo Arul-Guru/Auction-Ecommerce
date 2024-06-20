@@ -88,8 +88,16 @@ public class AuctionTemplateController {
         }
     }
 
-    
-
+    @PostMapping("/update/{id}")
+    public String updateAuction(@PathVariable int id, @ModelAttribute Auction auctionDetails) {
+        try {
+            auctionService.updateAuction(id, auctionDetails);
+        } catch (IllegalArgumentException e) {
+            logger.error("Error updating auction: {}", e.getMessage());
+            return "error"; // Ensure you have an error.html to handle such cases
+        }
+        return "redirect:/api/v2/auctions/category/" + auctionDetails.getCategoryId();
+    }
 
     @GetMapping("/delete/{id}")
     public String deleteAuctionForm(@PathVariable int id, Model model) {
@@ -104,18 +112,12 @@ public class AuctionTemplateController {
 
     @PostMapping("/delete/{id}")
     public String deleteAuction(@PathVariable int id) {
-        try {
+        Optional<Auction> auction = auctionService.getAuctionById(id);
+        if (auction.isPresent()) {
             auctionService.deleteAuction(id);
-            // Redirect to the list of auctions in the same category after deletion
-            Optional<Auction> auction = auctionService.getAuctionById(id);
-            if (auction.isPresent()) {
-                return "redirect:/api/v2/auctions/category/" + auction.get().getCategoryId();
-            } else {
-                return "redirect:/api/v2/auctions";
-            }
-        } catch (Exception e) {
-            logger.error("Error deleting auction: {}", e.getMessage());
-            return "error";
+            return "redirect:/api/v2/auctions/category/" + auction.get().getCategoryId();
+        } else {
+            return "redirect:/api/v2/auctions";
         }
     }
 }

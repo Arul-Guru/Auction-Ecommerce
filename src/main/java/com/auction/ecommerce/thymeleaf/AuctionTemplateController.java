@@ -1,4 +1,4 @@
-package com.auction.ecommerce.thymleaf;
+package com.auction.ecommerce.thymeleaf;
 
 import com.auction.ecommerce.model.Auction;
 import com.auction.ecommerce.model.Category;

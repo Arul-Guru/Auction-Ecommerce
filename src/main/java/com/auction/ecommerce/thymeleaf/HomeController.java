@@ -1,4 +1,4 @@
-package com.auction.ecommerce.thymleaf;
+package com.auction.ecommerce.thymeleaf;
 
 import com.auction.ecommerce.model.Category;
 import com.auction.ecommerce.service.CategoryService;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/v2/users")
+@RequestMapping("/api/v2")
 public class HomeController {
 
     @Autowired

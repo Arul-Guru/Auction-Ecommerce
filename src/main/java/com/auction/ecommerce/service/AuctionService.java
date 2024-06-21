@@ -34,7 +34,7 @@ public class AuctionService {
 
     public Auction createAuction(Auction auction) {
         validateAuction(auction);
-
+       
         User user = getCurrentUser();
         Long categoryId = auction.getCategoryId();
         Category category = categoryRepository.findById(categoryId)

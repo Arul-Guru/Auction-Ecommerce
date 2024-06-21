@@ -92,5 +92,4 @@ public class UserService {
             throw new IllegalArgumentException("Invalid gender");
         }
     }
-
 }

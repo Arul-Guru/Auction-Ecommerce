@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - AuctionKart</title>
+    <!-- Include Bootstrap CSS for consistent styling -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4">Login</h2>
+        <!-- The form's action points to the login method in the UserController -->
+        <form th:action="@{/api/v2/login}" th:object="${authRequest}" method="post" class="mt-4">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" th:field="*{username}" class="form-control" required>
+                <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" th:field="*{password}" class="form-control" required>
+                <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Login</button>
+                <a th:href="@{/api/v2/register}" class="btn btn-secondary">Sign up</a>
+            </div>
+            <!-- Display error messages -->
+            <div th:if="${error}" class="alert alert-danger mt-4" th:text="${error}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger mt-4" th:text="${errorMessage}"></div>
+        </form>
+    </div>
+</body>
+</html>

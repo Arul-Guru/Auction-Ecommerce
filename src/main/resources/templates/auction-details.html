@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Auction Details</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Auction Details</h1>
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${auction.itemName}">Auction Title</h5>
+                <p class="card-text" th:text="${auction.itemDescription}">Auction Description</p>
+                <p class="card-text"><strong>Starting Bid:</strong> <span th:text="${auction.startingPrice}">Starting Price</span></p>
+                <p class="card-text"><strong>Highest Bid:</strong> <span th:text="${auction.highestBid}">Highest Bid</span></p>
+                <p class="card-text"><strong>End Time:</strong> <span th:text="${#temporals.format(auction.endTime, 'yyyy-MM-dd HH:mm:ss')}">End Time</span></p>
+                <p class="card-text"><strong>Status:</strong> <span th:text="${auction.status}">Status</span></p>
+                <a th:href="@{/api/v2/auctions/update/{id}(id=${auction.id})}" class="btn btn-warning">Update</a>
+                <a th:href="@{/api/v2/auctions/delete/{id}(id=${auction.id})}" class="btn btn-danger">Delete</a>
+                <a th:href="@{/api/v2/auctions/category/{categoryId}(categoryId=${auction.categoryId})}" class="btn btn-secondary">Back to Auctions</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

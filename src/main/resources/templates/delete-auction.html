@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Delete Auction</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Delete Auction</h1>
+        <div class="alert alert-warning mt-3">
+            <p>Are you sure you want to delete the following auction?</p>
+            <ul>
+                <li><strong>Item Name:</strong> <span th:text="${auction.itemName}">Auction Item Name</span></li>
+                <li><strong>Description:</strong> <span th:text="${auction.itemDescription}">Auction Description</span></li>
+                <li><strong>Starting Bid:</strong> <span th:text="${auction.startingPrice}">Starting Price</span></li>
+                <li><strong>Highest Bid:</strong> <span th:text="${auction.highestBid}">Highest Bid</span></li>
+                <li><strong>End Time:</strong> <span th:text="${#temporals.format(auction.endTime, 'yyyy-MM-dd HH:mm:ss')}">End Time</span></li>
+                <li><strong>Status:</strong> <span th:text="${auction.status}">Status</span></li>
+            </ul>
+        </div>
+        <form th:action="@{/api/v2/auctions/delete/{id}(id=${auction.id})}" method="post" class="mt-3">
+            <input type="hidden" name="_method" value="delete"/>
+            <button type="submit" class="btn btn-danger">Delete Auction</button>
+            <a th:href="@{/api/v2/auctions/category/{categoryId}(categoryId=${auction.categoryId})}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

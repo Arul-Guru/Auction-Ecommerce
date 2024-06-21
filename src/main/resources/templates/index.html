@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home - Auction Categories</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Auction Categories</h1>
+        <div class="list-group mt-3">
+            <!-- Iterate over the categories -->
+            <a th:each="category : ${categories}"
+               th:href="@{/api/v2/auctions/category/{id}(id=${category.id})}"
+               class="list-group-item list-group-item-action">
+                <span th:text="${category.name}">Category Name</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

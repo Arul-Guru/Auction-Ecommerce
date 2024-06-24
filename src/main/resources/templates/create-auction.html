@@ -5,6 +5,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
+	<div style="position: absolute; top: 10px; right: 10px;">
+         <!-- Logout button -->
+         <form th:action="@{/api/v2/logout}" method="get" style="margin: 0;">
+             <button type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px;">Logout</button>
+         </form>
+     </div>
     <div class="container">
         <h1 class="mt-5">Create New Auction</h1>
         <form th:action="@{/api/v2/auctions}" method="post" th:object="${auction}" class="mt-3">

@@ -75,6 +75,8 @@ public class UserTemplateController {
     	User foundUser = userRepository.findByUsername(authRequest.getUsername());
     	if (foundUser != null && passwordEncoder.matches(authRequest.getPassword(), foundUser.getPassword())) {
     		logger.info("logged in successfull");
+    		session.setAttribute("userName", foundUser.getUsername());
+    		session.setAttribute("userId", foundUser.getId());
     		return "redirect:/api/v2/home";
     	}
     	else {
@@ -88,6 +90,6 @@ public class UserTemplateController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/login"; // Redirect to login page after logout
+        return "redirect:/api/v2/login"; // Redirect to login page after logout
     }
 }

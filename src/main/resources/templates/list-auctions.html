@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Auctions in Category</title>
+    <title>Auctions List</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Auctions in <span th:text="${category.name}">Category Name</span></h1>
-        <!-- Ensure th:href correctly includes the categoryId -->
+    	
+        <div style="position: absolute; top: 10px; right: 10px;">
+            <!-- Logout button -->
+            <form th:action="@{/api/v2/logout}" method="get" style="margin: 0;">
+                <button type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px;">Logout</button>
+            </form>
+        </div>
+		
+        <h1 class="mt-5">Auctions List</h1>
         <a th:href="@{/api/v2/auctions/create(categoryId=${category.id})}" class="btn btn-success mb-3">Create New Auction</a>
         <table class="table table-striped mt-3">
             <thead>
@@ -30,20 +37,23 @@
                     <td th:text="${#temporals.format(auction.endTime, 'yyyy-MM-dd HH:mm:ss')}">End Time</td>
                     <td th:text="${auction.status}">Status</td>
                     <td>
-                        <a th:href="@{/api/v2/auctions/{id}(id=${auction.id})}" class="btn btn-info btn-sm">View</a>
-                        <a th:href="@{/api/v2/auctions/update/{id}(id=${auction.id})}" class="btn btn-warning btn-sm">Update</a>
-                        <form th:action="@{/api/v2/auctions/delete/{id}(id=${auction.id})}" method="post" style="display:inline;">
-                            <input type="hidden" name="_method" value="delete"/>
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <!-- Check if the logged-in user is the creator of the auction -->
+                        <div th:if="${auction.getCreator.getId == userId}">
+                            <a th:href="@{/api/v2/auctions/{id}(id=${auction.id})}" class="btn btn-info btn-sm">View</a>
+                            <a th:href="@{/api/v2/auctions/update/{id}(id=${auction.id})}" class="btn btn-warning btn-sm">Update</a>
+                            <a th:href="@{/api/v2/auctions/delete/{id}(id=${auction.id})}" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                        <div th:if="${auction.getCreator.getId != userId}">
+                            <a th:href="@{/api/v2/auctions/bid/{id}(id=${auction.id})}" class="btn btn-primary btn-sm">Place Bid</a>
+                        </div>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(auctions)}">
-                    <td colspan="7">No auctions found in this category.</td>
+                    <td colspan="7">No auctions found.</td>
                 </tr>
             </tbody>
         </table>
-        <a th:href="@{/api/v2/users/home}" class="btn btn-secondary">Back to Categories</a>
+        <a th:href="@{/api/v2/home}" class="btn btn-secondary">Back to Categories</a>
     </div>
 </body>
 </html>

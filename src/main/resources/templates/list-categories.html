@@ -6,9 +6,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5">Categories</h1>
-        <!-- Button to create a new category -->
-        <a th:href="@{/categories/create}" class="btn btn-success mb-3">Create New Category</a>
+        <h1 class="mt-5">All Categories</h1>
         <div class="list-group">
             <a th:each="category : ${categories}" th:href="@{/api/v2/auctions/category/{id}(id=${category.id})}" class="list-group-item list-group-item-action" th:text="${category.name}">Category Name</a>
         </div>

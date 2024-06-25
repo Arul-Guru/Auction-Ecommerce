@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Category</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Create New Category</h1>
+        <form th:action="@{/categories}" method="post" th:object="${category}" class="mt-3">
+            <div class="form-group">
+                <label for="name">Category Name</label>
+                <input type="text" id="name" name="name" th:field="*{name}" class="form-control" required />
+                <div th:if="${#fields.hasErrors('name')}" class="alert alert-danger mt-2" th:errors="*{name}">Category Name Error</div>
+            </div>
+            <div class="form-group">
+                <label for="description">Category Description</label>
+                <textarea id="description" name="description" th:field="*{description}" class="form-control" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Create Category</button>
+            <a th:href="@{/api/v2/home}" class="btn btn-secondary">Cancel</a>
+            <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}">Error Message</div>
+        </form>
+    </div>
+</body>
+</html>

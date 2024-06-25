@@ -154,11 +154,6 @@ public class AuctionService {
     @Autowired
     private AuctionRepository auctionRepository;
 
-    /**
-     * Creates a new auction.
-     * @param auction the auction to create.
-     * @return the created auction.
-     */
     public Auction createAuction(Auction auction) {
         // Additional business logic can be added here before saving
         auction.setStatus("active"); // Set default status to active
@@ -171,31 +166,14 @@ public class AuctionService {
         return auctions;
     }
 
-
-    /**
-     * Finds auctions by category ID.
-     * @param categoryId the category ID.
-     * @return a list of auctions in the given category.
-     */
     public List<Auction> findAuctionsByCategoryId(Long categoryId) {
         return auctionRepository.findByCategoryId(categoryId);
     }
 
-    /**
-     * Retrieves an auction by its ID.
-     * @param id the auction ID.
-     * @return an optional auction.
-     */
     public Optional<Auction> getAuctionById(int id) {
         return auctionRepository.findById(id);
     }
 
-    /**
-     * Updates an existing auction.
-     * @param id the auction ID.
-     * @param auctionDetails the new auction details.
-     * @return the updated auction.
-     */
     public Auction updateAuction(int id, Auction auctionDetails) {
         Auction auction = auctionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
@@ -211,10 +189,6 @@ public class AuctionService {
         return auctionRepository.save(auction);
     }
 
-    /**
-     * Deletes an auction by its ID.
-     * @param id the auction ID.
-     */
     public void deleteAuction(int id) {
         Auction auction = auctionRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
@@ -222,12 +196,6 @@ public class AuctionService {
         auctionRepository.delete(auction);
     }
 
-    /**
-     * Places a bid on an auction.
-     * @param auctionId the auction ID.
-     * @param bidAmount the bid amount.
-     * @return the updated auction.
-     */
     public Auction placeBid(int auctionId, double bidAmount) {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new IllegalArgumentException("Auction not found"));

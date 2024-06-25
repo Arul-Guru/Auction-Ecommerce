@@ -5,16 +5,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
-	<div style="position: absolute; top: 10px; right: 10px;">
-         <!-- Logout button -->
-         <form th:action="@{/api/v2/logout}" method="get" style="margin: 0;">
-             <button type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px;">Logout</button>
-         </form>
-     </div>
     <div class="container">
-        <h1 class="mt-5">Categories</h1>
-        <!-- Button to create a new category -->
-        <a th:href="@{/categories/create}" class="btn btn-success mb-3">Create New Category</a>
+        <h1 class="mt-5">All Categories</h1>
         <div class="list-group">
             <a th:each="category : ${categories}" th:href="@{/api/v2/auctions/category/{id}(id=${category.id})}" class="list-group-item list-group-item-action" th:text="${category.name}">Category Name</a>
         </div>

@@ -1,10 +1,12 @@
 package com.auction.ecommerce.thymeleaf;
 
 import com.auction.ecommerce.model.Auction;
+import com.auction.ecommerce.model.Bid;
 import com.auction.ecommerce.model.Category;
 import com.auction.ecommerce.model.User;
 import com.auction.ecommerce.repository.UserRepository;
 import com.auction.ecommerce.service.AuctionService;
+import com.auction.ecommerce.service.BidService;
 import com.auction.ecommerce.service.CategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,8 @@ public class AuctionTemplateController {
 
     @Autowired
     private AuctionService auctionService;
+    @Autowired
+    private BidService bidService;
 
     @Autowired
     private CategoryService categoryService;
@@ -78,7 +82,7 @@ public class AuctionTemplateController {
         } else {
             auction.setStatus("closed"); // or any other status you deem appropriate
         }
-        auctionService.createAuction(auction);
+        auctionService.createAuctionv2(auction);
         return "redirect:/api/v2/auctions/category/" + auction.getCategoryId();
     }
 
@@ -128,7 +132,7 @@ public class AuctionTemplateController {
             model.addAttribute("auction",auction.get());
             // Only allow the creator to update
             if (auction.get().getCreator().getId() == userId) {
-                auctionService.updateAuction(id, auctionDetails);
+                auctionService.updateAuctionv2(id, auctionDetails);
             } else {
                 logger.error("User not authorized to update auction");
                 return "error";
@@ -170,7 +174,7 @@ public class AuctionTemplateController {
 
             // Only allow the creator to delete
             if (auction.get().getCreator().getId() == userId) {
-                auctionService.deleteAuction(id);
+                auctionService.deleteAuctionv2(id);
                 return "redirect:/api/v2/auctions/category/" + auction.get().getCategoryId();
             } else {
                 logger.error("User not authorized to delete auction");
@@ -178,6 +182,34 @@ public class AuctionTemplateController {
             }
         } else {
             return "redirect:/api/v2/auctions";
+        }
+    }
+    
+    @GetMapping("/bid/{id}")
+    public String showBidForm(@PathVariable int id, Model model, HttpSession session) {
+        Optional<Auction> auction = auctionService.getAuctionById(id);
+        if (auction.isPresent()) {
+            model.addAttribute("auction", auction.get());
+            Integer userId = (Integer) session.getAttribute("userId");
+            model.addAttribute("userId", userId);
+            return "place-bid";
+        } else {
+            return "redirect:/api/v2/auctions";
+        }
+    }
+
+    @PostMapping("/place-bid")
+    public String placeBid(@RequestParam int auctionId, @RequestParam double bidAmount, Model model, HttpSession session) {
+        try {
+            Integer userId = (Integer) session.getAttribute("userId");
+            Bid bid = bidService.placeBidv2(auctionId, userId, bidAmount);
+
+            return "redirect:/api/v2/auctions/category/" + bid.getAuction().getCategoryId();
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            Optional<Auction> auction = auctionService.getAuctionById(auctionId);
+            auction.ifPresent(value -> model.addAttribute("auction", value));
+            return "place-bid";
         }
     }
 }

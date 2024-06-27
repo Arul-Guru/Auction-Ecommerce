@@ -6,15 +6,12 @@ import com.auction.ecommerce.model.User;
 import com.auction.ecommerce.repository.BidRepository;
 import com.auction.ecommerce.repository.AuctionRepository;
 import com.auction.ecommerce.repository.UserRepository;
-import com.auction.ecommerce.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -89,6 +86,38 @@ public class BidService {
         auctionRepository.save(auction);
 
         return savedBid;
+    } 
+    
+    public Bid placeBidv2(int auctionId, int userId, double bidAmount) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new IllegalArgumentException("Auction not found"));
+
+        if (auction.getEndTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Auction has ended");
+        }
+
+        if (bidAmount <= auction.getHighestBid() || bidAmount <= auction.getStartingPrice()) {
+            throw new IllegalArgumentException("Bid must be higher than the current highest bid and the starting bid");
+        }
+
+        User bidder = userRepository.findById(userId);
+        if (bidder == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        // Create and save the new bid
+        Bid bid = new Bid();
+        bid.setAuction(auction);
+        bid.setBidderId(userId);
+        bid.setBidAmount(bidAmount);
+        bid.setBidTime(LocalDateTime.now());
+        bidRepository.save(bid);
+
+        // Update auction with the highest bid
+        auction.setHighestBid(bidAmount);
+        auctionRepository.save(auction);
+
+        return bid;
     }
     
     private User getCurrentUser() {

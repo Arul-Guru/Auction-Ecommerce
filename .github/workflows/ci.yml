@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - sprint02/dev
+      - task-gi
   pull_request:
     branches:
-      - sprint02/dev
+      - task-gi
 
 jobs:
   build:

@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - sprint02/dev
+  pull_request:
+    branches:
+      - sprint02/dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt-openjdk'
+
+      - name: Build with Maven
+        run: mvn clean install --fail-never
+
+      - name: Run tests
+        run: mvn test
+
+      - name: Package application
+        run: mvn package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: springboot-app
+          path: target/*.jar
+
+      - name: Deploy to server (Optional)
+        env:
+          DEPLOY_SERVER: ${{ secrets.DEPLOY_SERVER }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
+        run: |
+          echo "Deploying to server..."
+          scp -i $DEPLOY_SERVER -o StrictHostKeyChecking=no target/*.jar $DEPLOY_USER@deploy-server:/path/to/deploy
+          ssh $DEPLOY_USER@deploy-server 'sudo systemctl restart my-springboot-app.service'
